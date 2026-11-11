@@ -14,3 +14,16 @@ rebuild: clean
 
 build:
 	pip wheel . -w dist --no-deps
+
+# uv workflows (the adiskreader fork checkout is expected at ../adiskreader)
+dev:
+	uv sync --extra dev
+
+run:
+	uv run adiskreader-secretsdump
+
+install:
+	uv tool install --force .
+
+install-editable:
+	uv tool install --force --editable .

@@ -1,3 +1,48 @@
 [build-system]
 requires = ["setuptools>=61.0.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "adiskreader-secretsdump"
+dynamic = ["version"]
+description = "Extract registry and NTDS secrets from local or remote disk images"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Tamas Jos", email = "info@skelsecprojects.com" }]
+keywords = ["disk", "forensics", "secretsdump", "ntds", "registry", "vmdk", "vdi"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "adiskreader",
+    "pypykatz>=0.6.9",
+    "aesedb>=0.1.6",
+    "tqdm",
+    "colorama",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "pytest-asyncio", "build"]
+
+[project.scripts]
+adiskreader-secretsdump = "adiskreader_secretsdump.examples.console:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "adiskreader_secretsdump._version.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["adiskreader_secretsdump*"]
+exclude = ["tests*"]
+
+# The refactored adiskreader fork (VMDK, VDI, QCOW2, OVA, EXT4, ...) is used as
+# the base. It is not published on PyPI yet, so uv installs it from git.
+# For local development against a checkout, replace this with:
+#   adiskreader = { path = "../adiskreader", editable = true }
+[tool.uv.sources]
+adiskreader = { git = "https://github.com/glynx/adiskreader.git", branch = "main" }
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100

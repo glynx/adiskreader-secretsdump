@@ -4,6 +4,10 @@ from aesedb.eesentdb import ESENT_DB
 from aesedb.security.ntds import NTDS
 
 
+class NTDSNotFoundError(FileNotFoundError):
+    """Raised when the image does not contain an Active Directory database."""
+
+
 class NTDSSecrets:
     def __init__(self, fs:FileSystem, bootkey:bytes or str or OffineRegistry):
         self.__fs = fs
@@ -25,10 +29,11 @@ class NTDSSecrets:
         
         try:
             ntds_file = await self.__fs.open(self.NTDS_PATH)
-            if ntds_file is None:
-                raise Exception('NTDS file not found!')
-        except Exception as e:
-            raise e
+        except FileNotFoundError as e:
+            raise NTDSNotFoundError(self._not_found_message()) from e
+
+        if ntds_file is None:
+            raise NTDSNotFoundError(self._not_found_message())
 
         
         db = ESENT_DB(ntds_file)
@@ -48,6 +53,13 @@ class NTDSSecrets:
             for line in str(secret).split('\n'):
                 yield line.strip()
     
+    def _not_found_message(self):
+        return (
+            'NTDS database not found at %s. This image looks like a regular '
+            'workstation/server without Active Directory, so there are no domain '
+            'secrets to dump. The registry secrets above were still extracted.' % self.NTDS_PATH
+        )
+
     def __str__(self):
         t = '=== NTDS Secrets ===\r\n'
         t += 'Not stored in memory!'

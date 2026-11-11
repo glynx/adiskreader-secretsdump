@@ -16,11 +16,69 @@ Check out the community version at [OctoPwn - Live](https://live.octopwn.com/)
 
 
 # Install
-`git clone` then `pip install .`
+
+This project uses the [glynx/adiskreader](https://github.com/glynx/adiskreader) fork as its
+base, which adds VMDK, VDI, QCOW2, OVA and EXT4 support. The fork is not published on PyPI,
+so `pyproject.toml` installs it from git via `[tool.uv.sources]`:
+
+```toml
+[tool.uv.sources]
+adiskreader = { git = "https://github.com/glynx/adiskreader.git", branch = "main" }
+```
+
+For local development against a checkout, replace it with:
+
+```toml
+adiskreader = { path = "../adiskreader", editable = true }
+```
+
+## Development environment (uv)
+
+```bash
+git clone https://github.com/skelsec/adiskreader-secretsdump.git
+cd adiskreader-secretsdump
+uv sync
+uv run adiskreader-secretsdump --help
+```
+
+## Install as a uv tool
+
+```bash
+uv tool install .
+# or, to pick up local changes automatically:
+uv tool install --editable .
+```
+
+Afterwards the command is available globally:
+
+```bash
+adiskreader-secretsdump <url>
+```
+
+## Classic pip install
+
+```bash
+pip install .
+```
 
 # Usage
-First you MUST manually install `adiskreader` project from [here](https://github.com/skelsec/adiskreader) as it is not yet packaged on pip.  
-after install you'll get `adiskreacer-secretsdump`. Just use `adiskreacer-secretsdump <url>` 
+
+Just use `adiskreader-secretsdump <url>`.
+
+Besides the datasource schemes of adiskreader (file, gz, SMB, SSH) the disk format is
+selected automatically from the file extension or an explicit scheme tag (`+vmdk`,
+`+vdi`, `+qcow2`, `+ova`, `+vhdx`, `+vhd`, `+raw`).
+
+```bash
+# local VMDK
+adiskreader-secretsdump file:///home/user/images/disk.vmdk
+
+# VDI with a differencing parent chain
+adiskreader-secretsdump --parent /images/base.vdi file:///images/snapshot.vdi
+
+# disk inside an OVA archive (name or index)
+adiskreader-secretsdump --disk 0 file:///images/appliance.ova
+```
 
 ## Commands
 The command line argument of this tool has the same format as the adiskreader-console.  
