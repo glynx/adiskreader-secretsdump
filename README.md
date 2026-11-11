@@ -17,6 +17,12 @@ Check out the community version at [OctoPwn - Live](https://live.octopwn.com/)
 
 # Install
 
+Install using uv: 
+
+~~~bash 
+uv tool install 'git+https://github.com/glynx/adiskreader-secretsdump.git
+~~~
+
 This project uses the [glynx/adiskreader](https://github.com/glynx/adiskreader) fork as its
 base, which adds VMDK, VDI, QCOW2, OVA and EXT4 support. The fork is not published on PyPI,
 so `pyproject.toml` installs it from git via `[tool.uv.sources]`:
@@ -26,16 +32,11 @@ so `pyproject.toml` installs it from git via `[tool.uv.sources]`:
 adiskreader = { git = "https://github.com/glynx/adiskreader.git", branch = "main" }
 ```
 
-For local development against a checkout, replace it with:
-
-```toml
-adiskreader = { path = "../adiskreader", editable = true }
-```
 
 ## Development environment (uv)
 
 ```bash
-git clone https://github.com/skelsec/adiskreader-secretsdump.git
+git clone https://github.com/glynx/adiskreader-secretsdump.git
 cd adiskreader-secretsdump
 uv sync
 uv run adiskreader-secretsdump --help
